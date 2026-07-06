@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Mini App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            padding: 20px;
+            font-family: -apple-system, Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            min-height: 100vh;
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .btn:active { opacity: 0.7; }
+        .counter {
+            font-size: 36px;
+            text-align: center;
+            padding: 15px;
+        }
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--tg-theme-button-color, #2481cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 15px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="user-avatar" id="avatar">👤</div>
+        <h1 style="text-align:center;">🚀 Мой Mini App</h1>
+        <p id="userInfo" style="text-align:center; margin-top:10px;">Загрузка...</p>
+    </div>
+    
+    <div class="card">
+        <div class="counter">📊 <span id="counterValue">0</span></div>
+        <button class="btn" id="incrementBtn">➕ Увеличить</button>
+        <button class="btn" id="resetBtn" style="background:#6c757d;">🔄 Сбросить</button>
+    </div>
+    
+    <button class="btn" id="alertBtn">📢 Показать уведомление</button>
+    <button class="btn" id="shareBtn">📤 Поделиться</button>
+    <button class="btn" id="closeBtn" style="background:#dc3545;">❌ Закрыть</button>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        const user = tg.initDataUnsafe?.user;
+        const userInfo = document.getElementById('userInfo');
+        const avatar = document.getElementById('avatar');
+        
+        if (user) {
+            userInfo.innerHTML = `
+                👋 <b>${user.first_name}</b> ${user.last_name || ''}<br>
+                🆔 ID: ${user.id}<br>
+                ${user.username ? '📛 @' + user.username : ''}
+            `;
+            avatar.textContent = user.first_name.charAt(0).toUpperCase();
+        } else {
+            userInfo.innerHTML = '⚠️ Запусти через Telegram';
+            avatar.textContent = '🤖';
+        }
+        
+        let count = 0;
+        document.getElementById('incrementBtn').onclick = function() {
+            count++;
+            document.getElementById('counterValue').textContent = count;
+            tg.HapticFeedback.impactOccurred('light');
+        };
+        
+        document.getElementById('resetBtn').onclick = function() {
+            count = 0;
+            document.getElementById('counterValue').textContent = count;
+            tg.HapticFeedback.impactOccurred('medium');
+        };
+        
+        document.getElementById('alertBtn').onclick = function() {
+            tg.showAlert('🎉 Привет из Mini App!');
+        };
+        
+        document.getElementById('shareBtn').onclick = function() {
+            tg.shareToStory('https://telegram.org/img/t_logo.png', {
+                text: 'Проверь мой Mini App!'
+            });
+        };
+        
+        document.getElementById('closeBtn').onclick = function() {
+            tg.close();
+        };
+    </script>
+</body>
+</html>
